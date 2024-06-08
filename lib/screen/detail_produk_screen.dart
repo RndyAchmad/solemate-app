@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
 class DetailProdukScreen extends StatelessWidget {
+  const DetailProdukScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Detail Product',
+        title: const Text('Detail Product',
             style: TextStyle(color: Colors.black, fontSize: 25)),
         backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -22,27 +24,27 @@ class DetailProdukScreen extends StatelessWidget {
                 height: 200,
               ),
             ),
-            SizedBox(height: 16.0),
-            Text(
+            const SizedBox(height: 16.0),
+            const Text(
               'Rp. 1.250.000',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
             ),
-            SizedBox(height: 8.0),
-            Text(
+            const SizedBox(height: 8.0),
+            const Text(
               'Sepatu Nike Air Jordan',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
             ),
-            Divider(color: Colors.grey, height: 20.0),
-            Text(
+            const Divider(color: Colors.grey, height: 20.0),
+            const Text(
               'Tentang Produk',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
-            SizedBox(height: 8.0),
-            Text(
+            const SizedBox(height: 8.0),
+            const Text(
               'Nike Air Jordan adalah salah satu lini sepatu paling ikonik dalam dunia olahraga dan mode. Pertama kali diperkenalkan pada tahun 1984, sepatu ini dirancang khusus untuk bintang basket legendaris Michael Jordan. Dengan desain yang inovatif dan teknologi canggih, Air Jordan menjadi simbol performa tinggi dan gaya yang tak tertandingi.',
               style: TextStyle(fontSize: 15),
             ),
-            Spacer(),
+            const Spacer(),
             Center(
               child: ElevatedButton(
                 onPressed: () {
@@ -50,34 +52,34 @@ class DetailProdukScreen extends StatelessWidget {
                     context: context,
                     builder: (context) {
                       return Container(
-                        padding: EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(16.0),
                         height: 200,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'Produk Ditambahkan ke Keranjang',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20,
                               ),
                             ),
-                            SizedBox(height: 10.0),
-                            Text(
+                            const SizedBox(height: 10.0),
+                            const Text(
                               'Nike Air Jordan telah berhasil ditambahkan ke keranjang belanja Anda.',
                               style: TextStyle(fontSize: 16),
                             ),
-                            Spacer(),
+                            const Spacer(),
                             Center(
                               child: ElevatedButton(
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },
-                                child: Text('Tutup'),
                                 style: ElevatedButton.styleFrom(
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                       horizontal: 90, vertical: 15),
                                 ),
+                                child: const Text('Tutup'),
                               ),
                             ),
                           ],
@@ -86,10 +88,11 @@ class DetailProdukScreen extends StatelessWidget {
                     },
                   );
                 },
-                child: Text('Tambahkan Keranjang'),
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 90, vertical: 15),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 90, vertical: 15),
                 ),
+                child: const Text("Tambahkan Keranjang"),
               ),
             ),
           ],
@@ -100,7 +103,7 @@ class DetailProdukScreen extends StatelessWidget {
 }
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: DetailProdukScreen(),
   ));
 }

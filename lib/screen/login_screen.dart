@@ -1,9 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:solemate_app/screen/main_screen.dart';
+
 import 'daftar_akun_screen.dart';
 
 class LoginPage extends StatelessWidget {
+  const LoginPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,8 +27,8 @@ class LoginPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
-                Text(
+                const SizedBox(height: 20),
+                const Text(
                   'SELAMAT DATANG',
                   style: TextStyle(
                     fontSize: 18,
@@ -34,16 +36,16 @@ class LoginPage extends StatelessWidget {
                     color: Colors.teal,
                   ),
                 ),
-                SizedBox(height: 10),
-                Text(
+                const SizedBox(height: 10),
+                const Text(
                   'Silahkan login terlebih dahulu !!!',
                   style: TextStyle(
                     fontSize: 14,
-                    color: const Color.fromARGB(255, 103, 103, 103),
+                    color: Color.fromARGB(255, 103, 103, 103),
                   ),
                 ),
-                SizedBox(height: 40),
-                TextField(
+                const SizedBox(height: 40),
+                const TextField(
                   decoration: InputDecoration(
                     labelText: 'Username',
                     labelStyle:
@@ -59,8 +61,8 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
-                TextField(
+                const SizedBox(height: 20),
+                const TextField(
                   decoration: InputDecoration(
                     labelText: 'Password',
                     labelStyle: TextStyle(color: Colors.teal),
@@ -76,22 +78,23 @@ class LoginPage extends StatelessWidget {
                   ),
                   obscureText: true,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MainScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => const MainScreen()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal,
-                    minimumSize: Size(double.infinity, 50),
+                    minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: Text(
+                  child: const Text(
                     'LOGIN',
                     style: TextStyle(
                       color: Colors.white,
@@ -99,21 +102,21 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Belum punya akun?'),
-                    SizedBox(width: 5),
+                    const Text('Belum punya akun?'),
+                    const SizedBox(width: 5),
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => DaftarAkunPage()),
+                              builder: (context) => const DaftarAkunPage()),
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         'Daftar',
                         style: TextStyle(
                           color: Colors.teal,
@@ -123,7 +126,7 @@ class LoginPage extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
               ],
             ),
           ),

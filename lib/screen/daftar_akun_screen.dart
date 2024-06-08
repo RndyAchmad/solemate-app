@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class DaftarAkunPage extends StatelessWidget {
+  const DaftarAkunPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,8 +21,8 @@ class DaftarAkunPage extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 20),
-          Text(
+          const SizedBox(height: 20),
+          const Text(
             'DAFTAR AKUN',
             style: TextStyle(
               fontSize: 19,
@@ -28,9 +30,9 @@ class DaftarAkunPage extends StatelessWidget {
               color: Colors.teal,
             ),
           ),
-          SizedBox(height: 30),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30.0),
+          const SizedBox(height: 30),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30.0),
             child: TextField(
               decoration: InputDecoration(
                 labelText: 'Nama Lengkap',
@@ -47,9 +49,9 @@ class DaftarAkunPage extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30.0),
+          const SizedBox(height: 20),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30.0),
             child: TextField(
               decoration: InputDecoration(
                 labelText: 'Username',
@@ -66,9 +68,9 @@ class DaftarAkunPage extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30.0),
+          const SizedBox(height: 20),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30.0),
             child: TextField(
               decoration: InputDecoration(
                 labelText: 'Password',
@@ -86,7 +88,7 @@ class DaftarAkunPage extends StatelessWidget {
               obscureText: true,
             ),
           ),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30.0),
             child: ElevatedButton(
@@ -95,12 +97,12 @@ class DaftarAkunPage extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.teal,
-                minimumSize: Size(double.infinity, 50),
+                minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: Text(
+              child: const Text(
                 'DAFTAR',
                 style: TextStyle(
                   color: Colors.white,
@@ -109,17 +111,17 @@ class DaftarAkunPage extends StatelessWidget {
               ),
             ),
           ),
-          Spacer(),
+          const Spacer(),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Sudah punya akun?'),
-              SizedBox(width: 5),
+              const Text('Sudah punya akun?'),
+              const SizedBox(width: 5),
               GestureDetector(
                 onTap: () {
                   Navigator.pop(context); // Kembali ke halaman login
                 },
-                child: Text(
+                child: const Text(
                   'Login',
                   style: TextStyle(
                     color: Colors.teal,
@@ -129,7 +131,7 @@ class DaftarAkunPage extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
         ],
       ),
     );

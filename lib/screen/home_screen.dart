@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+
 import 'detail_produk_screen.dart';
 
 class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Column(
+        title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -34,13 +37,14 @@ class HomePage extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 1.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1.0),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(8.0),
                 border: Border.all(color: Colors.grey),
               ),
-              child: Row(
+              child: const Row(
                 children: [
                   Icon(Icons.search, color: Colors.black),
                   SizedBox(width: 8.0),
@@ -55,10 +59,10 @@ class HomePage extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 10.0),
+            const SizedBox(height: 10.0),
             Expanded(
               child: ListView(
-                children: [
+                children: const [
                   ProductCard(),
                   ProductCard(),
                   ProductCard(),
@@ -78,13 +82,15 @@ class HomePage extends StatelessWidget {
 }
 
 class ProductCard extends StatelessWidget {
+  const ProductCard({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DetailProdukScreen()),
+          MaterialPageRoute(builder: (context) => const DetailProdukScreen()),
         );
       },
       child: Card(
@@ -97,8 +103,8 @@ class ProductCard extends StatelessWidget {
                 width: 100,
                 height: 100,
               ),
-              SizedBox(width: 10.0),
-              Column(
+              const SizedBox(width: 10.0),
+              const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(

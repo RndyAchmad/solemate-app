@@ -15,10 +15,10 @@ class _MainScreenState extends State<MainScreen> {
   int currentPageIndex = 0;
 
   final List<Widget> pages = <Widget>[
-    HomePage(),
-    CartPage(),
-    AboutMePage(),
-    ProfilePage(),
+    const HomePage(),
+    const CartPage(),
+    const AboutMePage(),
+    const ProfilePage(),
   ];
 
   @override
@@ -52,7 +52,7 @@ class _MainScreenState extends State<MainScreen> {
         },
         selectedItemColor: Colors.teal,
         unselectedItemColor: Colors.grey,
-        unselectedLabelStyle: TextStyle(color: Colors.grey),
+        unselectedLabelStyle: const TextStyle(color: Colors.grey),
         showUnselectedLabels: true,
         selectedFontSize: 12.0,
         unselectedFontSize: 12.0,

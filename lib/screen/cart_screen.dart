@@ -29,9 +29,9 @@ class CartPage extends StatelessWidget {
                   style: TextStyle(fontSize: 18),
                 ),
                 const SizedBox(height: 10),
-                CartItem(),
+                const CartItem(),
                 const SizedBox(height: 10),
-                OrderSummary(),
+                const OrderSummary(),
                 const Spacer(),
                 SizedBox(
                   width: isSmallScreen
@@ -39,7 +39,6 @@ class CartPage extends StatelessWidget {
                       : constraints.maxWidth * 0.5,
                   child: ElevatedButton(
                     onPressed: () {},
-                    child: const Text('Checkout'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.teal,
                       padding: const EdgeInsets.symmetric(
@@ -47,6 +46,7 @@ class CartPage extends StatelessWidget {
                       textStyle: const TextStyle(fontSize: 18),
                       foregroundColor: Colors.white,
                     ),
+                    child: const Text('Checkout'),
                   ),
                 ),
               ],
@@ -59,6 +59,8 @@ class CartPage extends StatelessWidget {
 }
 
 class CartItem extends StatelessWidget {
+  const CartItem({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -73,18 +75,17 @@ class CartItem extends StatelessWidget {
               height: 50,
             ),
             const SizedBox(width: 10),
-            Expanded(
+            const Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Nike Air Jordan',
+                  Text('Nike Air Jordan',
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 5),
-                  const Text('8.5', style: TextStyle(fontSize: 14)),
-                  const SizedBox(height: 5),
-                  const Text('1 x Rp 1.250.000',
-                      style: TextStyle(fontSize: 14)),
+                  SizedBox(height: 5),
+                  Text('8.5', style: TextStyle(fontSize: 14)),
+                  SizedBox(height: 5),
+                  Text('1 x Rp 1.250.000', style: TextStyle(fontSize: 14)),
                 ],
               ),
             ),
@@ -114,34 +115,36 @@ class CartItem extends StatelessWidget {
 }
 
 class OrderSummary extends StatelessWidget {
+  const OrderSummary({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return const Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Garansi pengiriman hanya dengan Rp 5.000'),
-            const SizedBox(height: 10),
+            Text('Garansi pengiriman hanya dengan Rp 5.000'),
+            SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 Text('Subtotal'),
                 Text('Rp 1.250.000'),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 Text('Shipping'),
                 Text('Rp 10.000'),
               ],
             ),
-            const Divider(),
+            Divider(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 Text(
                   'Total',
                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -160,5 +163,5 @@ class OrderSummary extends StatelessWidget {
 }
 
 void main() {
-  runApp(MaterialApp(home: CartPage()));
+  runApp(const MaterialApp(home: CartPage()));
 }
