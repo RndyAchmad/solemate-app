@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class CartPage extends StatelessWidget {
@@ -5,163 +7,214 @@ class CartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text('Keranjang', style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.shopping_cart, color: Colors.black),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            bool isSmallScreen = constraints.maxWidth < 600;
-            return Column(
-              children: [
-                const Text(
-                  '1 Items',
-                  style: TextStyle(fontSize: 18),
-                ),
-                const SizedBox(height: 10),
-                const CartItem(),
-                const SizedBox(height: 10),
-                const OrderSummary(),
-                const Spacer(),
-                SizedBox(
-                  width: isSmallScreen
-                      ? double.infinity
-                      : constraints.maxWidth * 0.5,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 32, vertical: 16),
-                      textStyle: const TextStyle(fontSize: 18),
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Text('Checkout'),
-                  ),
-                ),
-              ],
-            );
-          },
+    // Mendapatkan UID pengguna saat ini
+    final String? uid = FirebaseAuth.instance.currentUser?.uid;
+
+    if (uid == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Keranjang'),
         ),
-      ),
-    );
-  }
-}
+        body: const Center(
+          child: Text('Anda belum login'),
+        ),
+      );
+    }
 
-class CartItem extends StatelessWidget {
-  const CartItem({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Image.asset(
-              'assets/product/nike1.png',
-              width: 50,
-              height: 50,
-            ),
-            const SizedBox(width: 10),
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Nike Air Jordan',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 5),
-                  Text('8.5', style: TextStyle(fontSize: 14)),
-                  SizedBox(height: 5),
-                  Text('1 x Rp 1.250.000', style: TextStyle(fontSize: 14)),
-                ],
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60.0),
+        child: AppBar(
+          title: const Padding(
+            padding: EdgeInsets.only(top: 30.0),
+            child: Text(
+              'Keranjang',
+              style: TextStyle(
+                fontSize: 26,
+                color: Color.fromARGB(255, 0, 0, 0),
+                fontWeight: FontWeight.bold,
               ),
             ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.remove),
-                      onPressed: () {},
-                    ),
-                    const Text('1'),
-                    IconButton(
-                      icon: const Icon(Icons.add),
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+          ),
+          centerTitle: true,
         ),
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .collection('keranjang')
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return const Center(
+                child: Text('Terjadi kesalahan saat mengambil data keranjang'));
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text('Keranjang kosong'));
+          }
+
+          return Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  children: snapshot.data!.docs.map((doc) {
+                    var cartData = doc.data() as Map<String, dynamic>;
+                    var productId = cartData['productId'];
+
+                    return FutureBuilder<DocumentSnapshot>(
+                      future: FirebaseFirestore.instance
+                          .collection('shoes')
+                          .doc(productId)
+                          .get(),
+                      builder: (context, productSnapshot) {
+                        if (productSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+
+                        if (productSnapshot.hasError ||
+                            !productSnapshot.hasData ||
+                            !productSnapshot.data!.exists) {
+                          return const ListTile(
+                            title: Text('Produk tidak ditemukan'),
+                          );
+                        }
+
+                        var productData = productSnapshot.data!.data()
+                            as Map<String, dynamic>;
+
+                        // Memastikan 'name', 'image', 'quantity', dan 'price' tidak null
+                        var name = productData['name'] ?? '';
+                        var image = productData['image'] ?? '';
+                        var price = productData['price'] ?? 0;
+                        var quantity = cartData['quantity'] ?? 0;
+
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Card(
+                            elevation: 2,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  const Divider(),
+                                  Container(
+                                    width: 100,
+                                    height: 100,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: NetworkImage(image),
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          name,
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        // Harga dan jumlah
+                                        Text(
+                                          'Rp $price',
+                                          style: const TextStyle(fontSize: 16),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'Quantity: $quantity',
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  // Tombol untuk menambah atau mengurangi jumlah
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.add),
+                                        onPressed: () {
+                                          _tambahJumlahProduk(doc.id);
+                                        },
+                                      ),
+                                      Text(
+                                        quantity.toString(),
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.remove),
+                                        onPressed: () {
+                                          _kurangiJumlahProduk(
+                                              doc.id, quantity);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+              const SizedBox(height: 10),
+            ],
+          );
+        },
       ),
     );
   }
-}
 
-class OrderSummary extends StatelessWidget {
-  const OrderSummary({super.key});
+  void _kurangiJumlahProduk(String docId, int currentQuantity) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
 
-  @override
-  Widget build(BuildContext context) {
-    return const Card(
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Garansi pengiriman hanya dengan Rp 5.000'),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Subtotal'),
-                Text('Rp 1.250.000'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Shipping'),
-                Text('Rp 10.000'),
-              ],
-            ),
-            Divider(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Total',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  'Rp 1.260.000',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
+    final cartRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('keranjang')
+        .doc(docId);
+
+    if (currentQuantity > 1) {
+      cartRef.update({
+        'quantity': FieldValue.increment(-1),
+      });
+    } else {
+      cartRef.delete();
+    }
   }
-}
 
-void main() {
-  runApp(const MaterialApp(home: CartPage()));
+  void _tambahJumlahProduk(String docId) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('keranjang')
+        .doc(docId)
+        .update({
+      'quantity': FieldValue.increment(1),
+    });
+  }
 }
