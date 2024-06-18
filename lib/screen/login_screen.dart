@@ -15,6 +15,15 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   Future<void> _login() async {
+    // Check if email or password is empty
+    if (_usernameController.text.trim().isEmpty ||
+        _passwordController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Email dan password harus diisi')),
+      );
+      return;
+    }
+
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _usernameController.text.trim(),
@@ -125,7 +134,17 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: _login,
+                  onPressed: () {
+                    if (_usernameController.text.trim().isEmpty ||
+                        _passwordController.text.trim().isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text('Email dan password harus diisi')),
+                      );
+                    } else {
+                      _login();
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal,
                     minimumSize: const Size(double.infinity, 50),
