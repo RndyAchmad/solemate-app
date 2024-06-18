@@ -2,12 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class CartPage extends StatelessWidget {
-  const CartPage({super.key});
+class CartPage extends StatefulWidget {
+  const CartPage({Key? key}) : super(key: key);
 
   @override
+  _CartPageState createState() => _CartPageState();
+}
+
+class _CartPageState extends State<CartPage> {
+  @override
   Widget build(BuildContext context) {
-    // Mendapatkan UID pengguna saat ini
     final String? uid = FirebaseAuth.instance.currentUser?.uid;
 
     if (uid == null) {
@@ -90,7 +94,6 @@ class CartPage extends StatelessWidget {
                         var productData = productSnapshot.data!.data()
                             as Map<String, dynamic>;
 
-                        // Memastikan 'name', 'image', 'quantity', dan 'price' tidak null
                         var name = productData['name'] ?? '';
                         var image = productData['image'] ?? '';
                         var price = productData['price'] ?? 0;
@@ -130,10 +133,12 @@ class CartPage extends StatelessWidget {
                                           ),
                                         ),
                                         const SizedBox(height: 8),
-                                        // Harga dan jumlah
                                         Text(
                                           'Rp $price',
-                                          style: const TextStyle(fontSize: 16),
+                                          style: const TextStyle(
+                                              fontSize: 16,
+                                              color: Color.fromARGB(
+                                                  255, 255, 46, 46)),
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
@@ -144,7 +149,6 @@ class CartPage extends StatelessWidget {
                                     ),
                                   ),
                                   const SizedBox(width: 8),
-                                  // Tombol untuk menambah atau mengurangi jumlah
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -161,8 +165,13 @@ class CartPage extends StatelessWidget {
                                       IconButton(
                                         icon: const Icon(Icons.remove),
                                         onPressed: () {
-                                          _kurangiJumlahProduk(
-                                              doc.id, quantity);
+                                          if (quantity == 1) {
+                                            _showDeleteConfirmationDialog(
+                                                context, doc.id);
+                                          } else {
+                                            _kurangiJumlahProduk(
+                                                doc.id, quantity);
+                                          }
                                         },
                                       ),
                                     ],
@@ -175,6 +184,35 @@ class CartPage extends StatelessWidget {
                       },
                     );
                   }).toList(),
+                ),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  _showCheckoutConfirmationDialog(context, snapshot.data!.docs);
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(17),
+                  ),
+                ),
+                child: Container(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width - (2 * 24),
+                  decoration: BoxDecoration(
+                    color: Colors.teal,
+                    borderRadius: BorderRadius.circular(17),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Check Out',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
@@ -216,5 +254,130 @@ class CartPage extends StatelessWidget {
         .update({
       'quantity': FieldValue.increment(1),
     });
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context, String docId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Hapus Produk'),
+          content: const Text(
+              'Apakah Anda yakin ingin menghapus produk ini dari keranjang?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Batal'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Hapus'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _kurangiJumlahProduk(docId, 1);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showCheckoutConfirmationDialog(
+      BuildContext context, List<DocumentSnapshot> cartProducts) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Konfirmasi Checkout'),
+          content: const Text(
+              'Apakah Anda yakin ingin melanjutkan ke proses checkout?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Batal'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Lanjutkan'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _checkOut(cartProducts);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _checkOut(List<DocumentSnapshot> cartProducts) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    // Iterate over each product in cart and move to 'pesanan_selesai'
+    for (DocumentSnapshot cartProduct in cartProducts) {
+      var cartData = cartProduct.data() as Map<String, dynamic>;
+      var productId = cartData['productId'];
+      var quantity = cartData['quantity'];
+
+      // Reference to the document in 'keranjang'
+      DocumentReference cartRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('keranjang')
+          .doc(cartProduct.id);
+
+      // Reference to the document to be added in 'pesanan_selesai'
+      DocumentReference orderRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('pesanan_selesai')
+          .doc();
+
+      // Get product details from 'shoes' collection
+      DocumentSnapshot productSnapshot = await FirebaseFirestore.instance
+          .collection('shoes')
+          .doc(productId)
+          .get();
+
+      if (productSnapshot.exists) {
+        var productData = productSnapshot.data() as Map<String, dynamic>;
+
+        // Build the data to be moved to 'pesanan_selesai'
+        var orderData = {
+          'productId': productId,
+          'name': productData['name'],
+          'image': productData['image'],
+          'price': productData['price'],
+          'quantity': quantity,
+          'timestamp': Timestamp.now(),
+        };
+
+        // Add to batch
+        batch.set(orderRef, orderData);
+        batch.delete(cartRef);
+      }
+    }
+
+    try {
+      // Commit the batch
+      await batch.commit();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pesanan berhasil dibuat'),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Terjadi kesalahan saat proses check out'),
+        ),
+      );
+    }
   }
 }

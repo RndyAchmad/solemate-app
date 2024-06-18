@@ -5,12 +5,10 @@ import 'package:flutter/material.dart';
 class DetailProdukScreen extends StatefulWidget {
   final String productId;
 
-  // ignore: use_super_parameters
   const DetailProdukScreen({Key? key, required this.productId})
       : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _DetailProdukScreenState createState() => _DetailProdukScreenState();
 }
 
@@ -61,7 +59,7 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
       if (user != null) {
         String uid = user.uid;
 
-        // Cek apakah produk sudah ada di keranjang
+        // Check if the product is already in the cart
         DocumentSnapshot doc = await _db
             .collection('users')
             .doc(uid)
@@ -69,11 +67,10 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
             .doc(productId)
             .get();
 
-        // Mendapatkan data sebagai Map<String, dynamic> dan pastikan tidak null
         Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
 
         if (data != null) {
-          // Jika produk sudah ada di keranjang, tambahkan jumlahnya
+          // If the product is already in the cart, increase the quantity
           int jumlah = (data['quantity'] ?? 0) + 1;
           await _db
               .collection('users')
@@ -82,7 +79,7 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
               .doc(productId)
               .update({'quantity': jumlah});
         } else {
-          // Jika produk belum ada di keranjang, tambahkan produk baru
+          // If the product is not in the cart, add it as a new product
           await _db
               .collection('users')
               .doc(uid)
@@ -231,7 +228,111 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                             ),
                             textAlign: TextAlign.justify,
                           ),
-                          SizedBox(height: 24),
+                          SizedBox(height: 12),
+                          Divider(),
+                          SizedBox(height: 12),
+                          Text(
+                            'Ulasan Pengguna',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('ulasan')
+                                .where('productId', isEqualTo: widget.productId)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return CircularProgressIndicator();
+                              }
+
+                              if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              }
+
+                              if (!snapshot.hasData ||
+                                  snapshot.data!.docs.isEmpty) {
+                                return Text(
+                                  '-- Produk ini belum ada ulasan --',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.grey,
+                                  ),
+                                  textAlign: TextAlign.justify,
+                                );
+                              }
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: snapshot.data!.docs.map((document) {
+                                  var reviewData =
+                                      document.data() as Map<String, dynamic>;
+
+                                  // Check if displayName is not null or empty
+                                  String displayName =
+                                      reviewData['displayName'];
+                                  if (displayName == null ||
+                                      displayName.isEmpty) {
+                                    displayName = 'Anonymous';
+                                  }
+
+                                  // Use full_name if available
+                                  if (reviewData.containsKey('full_name')) {
+                                    displayName = reviewData['full_name'];
+                                  }
+
+                                  return Card(
+                                    margin: EdgeInsets.symmetric(vertical: 8),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          RichText(
+                                            text: TextSpan(
+                                              children: [
+                                                TextSpan(
+                                                  text: '$displayName',
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors.red,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                TextSpan(
+                                                  text: ' memberikan ulasan :',
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors.grey,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(height: 8),
+                                          Text(
+                                            reviewData['ulasan'],
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                              color: const Color.fromARGB(
+                                                  255, 0, 0, 0),
+                                            ),
+                                            textAlign: TextAlign.justify,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              );
+                            },
+                          ),
+                          SizedBox(height: 80),
                         ],
                       ),
                     ),
@@ -242,24 +343,29 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                 left: 0,
                 right: 0,
                 bottom: 24,
-                child: Center(
-                  child: GestureDetector(
-                    onTap: () {
-                      showConfirmation();
-                    },
-                    child: Container(
-                      height: 50,
-                      width: MediaQuery.of(context).size.width - (2 * 24),
-                      decoration: BoxDecoration(
-                        color: Colors.teal,
-                        borderRadius: BorderRadius.circular(17),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Tambahkan ke Keranjang',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        showConfirmation();
+                      },
+                      child: Container(
+                        height: 50,
+                        width: MediaQuery.of(context).size.width - (2 * 24),
+                        decoration: BoxDecoration(
+                          color: Colors.teal,
+                          borderRadius: BorderRadius.circular(17),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Tambahkan ke Keranjang',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),

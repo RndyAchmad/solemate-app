@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'firebase_options.dart';
-import 'screen/login_screen.dart'; // Make sure to import LoginPage correctly
+import 'screen/login_screen.dart';
 import 'screen/main_screen.dart';
 
 void main() async {
