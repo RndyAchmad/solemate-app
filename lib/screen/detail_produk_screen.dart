@@ -275,6 +275,7 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                                   // Check if displayName is not null or empty
                                   String displayName =
                                       reviewData['displayName'];
+                                  // ignore: unnecessary_null_comparison
                                   if (displayName == null ||
                                       displayName.isEmpty) {
                                     displayName = 'Anonymous';
@@ -359,7 +360,7 @@ class _DetailProdukScreenState extends State<DetailProdukScreen> {
                           color: Colors.teal,
                           borderRadius: BorderRadius.circular(17),
                         ),
-                        child: Center(
+                        child: const Center(
                           child: Text(
                             'Tambahkan ke Keranjang',
                             style: TextStyle(
